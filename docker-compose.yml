@@ -4,7 +4,7 @@ services:
     image: "traefik:v3.7.5"
     container_name: "traefik"
     environment:
-      HETZNER_API_KEY: "${TRAEFIK_ACME_HETZNER_API_KEY}"
+      HETZNER_API_TOKEN: "${TRAEFIK_ACME_HETZNER_API_TOKEN}"
     command:
       - "--log.level=INFO"
       - "--api=true"
