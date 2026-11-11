@@ -1,7 +1,7 @@
 services:
   traefik:
     restart: unless-stopped
-    image: "traefik:v3.7.5"
+    image: "traefik:v3.7.18"
     container_name: "traefik"
     environment:
       HETZNER_API_TOKEN: "${TRAEFIK_ACME_HETZNER_API_TOKEN}"
