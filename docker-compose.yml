@@ -5,6 +5,11 @@ services:
     container_name: "traefik"
     environment:
       HETZNER_API_TOKEN: "${TRAEFIK_ACME_HETZNER_API_TOKEN}"
+      # lego defaults to 60 s, which the delay below uses up on its own.
+      # One Hetzner nameserver served a new TXT record more than 60 s later
+      # than the other two.
+      HETZNER_PROPAGATION_TIMEOUT: "600"
+      HETZNER_POLLING_INTERVAL: "10"
     command:
       - "--log.level=INFO"
       - "--api=true"
@@ -21,10 +26,10 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=hetzner"
       - "--certificatesresolvers.letsencrypt.acme.dnschallenge.resolvers=1.1.1.1:53,8.8.8.8:53"
       # Let's Encrypt validates from several locations. Hetzner's nameservers can
-      # take a while to serve a new TXT record everywhere, so wait before the
-      # check and require every resolver to see it before asking for validation.
+      # take a while to serve a new TXT record everywhere. The default check asks
+      # every authoritative nameserver for the record; the delay adds margin for
+      # the anycast nodes that this host does not reach.
       - "--certificatesresolvers.letsencrypt.acme.dnschallenge.propagation.delayBeforeChecks=60s"
-      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.propagation.requireAllRNS=true"
     labels:
       - "traefik.enable=True"
       - "traefik.http.routers.traefik.rule=Host(`${TRAEFIK_DASHBOARD_URL}`)"
