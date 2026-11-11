@@ -20,6 +20,11 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json"
       - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=hetzner"
       - "--certificatesresolvers.letsencrypt.acme.dnschallenge.resolvers=1.1.1.1:53,8.8.8.8:53"
+      # Let's Encrypt validates from several locations. Hetzner's nameservers can
+      # take a while to serve a new TXT record everywhere, so wait before the
+      # check and require every resolver to see it before asking for validation.
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.propagation.delayBeforeChecks=60s"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.propagation.requireAllRNS=true"
     labels:
       - "traefik.enable=True"
       - "traefik.http.routers.traefik.rule=Host(`${TRAEFIK_DASHBOARD_URL}`)"
